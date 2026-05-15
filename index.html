@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云端书库</title>
+	<link rel="stylesheet" href="css/style.css">
+	<script src="js/ty.js"></script>
+	<script src="js/auth.js"></script>
+	<script src="nav.js"></script>
+	<script>
+	function doSearch() {
+	  let key = document.getElementById('searchInput').value.trim();
+	  if (!key) return alert('请输入书名');
+	  
+	  // 真实搜索：跳转到搜索结果页
+	  window.location.href = 'search.html?key=' + encodeURIComponent(key);
+	  
+	  // 如果你只是本地演示，用这个弹窗提示
+	  // alert('你搜索了：' + key);
+	}
+	</script>
+	<!-- 临时测试：把 nav.js 的内容直接写在 index.html 的底部 -->
+	</body>
+</head>
+<body>
+
+<!-- 导航栏（所有页面必须完全一样） -->
+<div class="navbar">
+    <div class="nav-left">
+        <div class="logo">📚 云端书库</div>
+        <div class="nav-menu">
+            <ul>
+                <li><a href="index.html">首页</a></li>
+                <li><a href="书库.html">书库</a></li>
+                <li><a href="shop.html">购物车</a></li>
+				<li class="admin-only" id="adminNavItem"><a href="后台.html">管理后台</a></li>
+            </ul>
+        </div>
+        <div class="search-group">
+            <input
+                type="text" 
+                id="searchInput" 
+                class="search-box" 
+                placeholder="输入书名搜索..." 
+                onkeydown="if(event.keyCode==13) doSearch()"
+            >
+            <button onclick="doSearch()" class="search-btn">搜索</button>
+        </div>
+    </div>
+
+    <div class="nav-right">
+        <a href="user.html">个人中心</a>
+    </div>
+</div>
+<!-- 轮播图start -->
+<div class="main-banner">
+	<div class="slideshow" style="background-color: #fff;">
+	    <img src="img/904f6e740b32d1183fa508bcfabcf9c7.jpg" class="active">
+	    <img src="img/26PCx675x420xBJXFQ.jpg">
+	    <img src="img/image03.jpg">
+		<img src="img/image04.jpg">
+	</div>
+</div>
+	
+	<!-- 轮播图end -->
+<div class="book-list-container">
+    <h2>热门书籍推荐</h2>
+
+    <div class="book-list">
+        <!-- 书籍 1 -->
+        <div class="book-card">
+            <!-- 左侧图片 -->
+            <div class="book-cover">
+                <img src="img/我不是戏神.jfif" alt="我不是戏神">
+            </div>
+            <!-- 右侧文字和按钮 -->
+            <div class="book-info">
+                <div class="text-group">
+                    <div class="book-title">我不是戏神</div>
+                    <div class="book-author">作者：三九音域</div>
+					<div class="book-author">分类</div>
+                    <div class="book-price">¥ 29.90</div>
+                </div>
+                
+                <!-- 按钮 -->
+                <button class="add-cart-btn" onclick="viewBookDetail(1, '我不是戏神', 29.90, '三九音域');">查看详情</button>
+            </div>
+        </div>
+
+        <!-- 书籍 2 -->
+        <div class="book-card">
+            <!-- 左侧图片 -->
+            <div class="book-cover">
+                <img src="img/我不是戏神.jfif" alt="我不是戏神">
+            </div>
+            <!-- 右侧文字和按钮 -->
+            <div class="book-info">
+                <div class="text-group">
+                    <div class="book-title">我不是戏神</div>
+                    <div class="book-author">作者：三九音域</div>
+					<div class="book-author">分类</div>
+                    <div class="book-price">¥ 29.90</div>
+                </div>
+                
+                <!-- 按钮链接到购物车页面，并带上书籍ID参数 -->
+                <!-- 按钮 -->
+                <button class="add-cart-btn" onclick="viewBookDetail(1, '我不是戏神', 29.90, '三九音域')">查看详情</button>
+            </div>
+        </div>
+
+        <!-- 书籍 3 -->
+        <div class="book-card">
+            <!-- 左侧图片 -->
+            <div class="book-cover">
+                <img src="img/我不是戏神.jfif" alt="我不是戏神">
+            </div>
+            <!-- 右侧文字和按钮 -->
+            <div class="book-info">
+                <div class="text-group">
+                    <div class="book-title">我不是戏神</div>
+                    <div class="book-author">作者：三九音域</div>
+					<div class="book-author">分类</div>
+                    <div class="book-price">¥ 29.90</div>
+                </div>
+                
+                <!-- 按钮-->
+                <button class="add-cart-btn" onclick="viewBookDetail(2, '我不是戏神', 29.90, '三九音域')">查看详情</button>
+            </div>
+        </div>
+
+        <!-- 书籍 4 -->
+        <div class="book-card">
+            <!-- 左侧图片 -->
+            <div class="book-cover">
+                <img src="img/我不是戏神.jfif" alt="我不是戏神">
+            </div>
+            <!-- 右侧文字和按钮 -->
+            <div class="book-info">
+                <div class="text-group">
+                    <div class="book-title">我不是戏神</div>
+                    <div class="book-author">作者：三九音域</div>
+					<div class="book-author">分类</div>
+                    <div class="book-price">¥ 29.90</div>
+                </div>
+                
+                <!-- 按钮 -->
+                <button class="add-cart-btn" onclick="viewBookDetail(4, '我不是戏神', 29.90, '三九音域')">查看详情</button>
+            </div>
+        </div>
+
+        <!-- 书籍 5 -->
+        <div class="book-card">
+            <!-- 左侧图片 -->
+            <div class="book-cover">
+                <img src="img/我不是戏神.jfif" alt="我不是戏神">
+            </div>
+            <!-- 右侧文字和按钮 -->
+            <div class="book-info">
+                <div class="text-group">
+                    <div class="book-title">我不是戏神</div>
+                    <div class="book-author">作者：三九音域</div>
+					<div class="book-author">分类</div>
+                    <div class="book-price">¥ 29.90</div>
+                </div>
+                
+                <!-- 按钮 -->
+                <button class="add-cart-btn" onclick="viewBookDetail(5, '我不是戏神', 29.90, '三九音域')">查看详情</button>
+            </div>
+        </div>
+
+        <!-- 书籍 6 -->
+        <div class="book-card">
+            <!-- 左侧图片 -->
+            <div class="book-cover">
+                <img src="img/我不是戏神.jfif" alt="我不是戏神">
+            </div>
+            <!-- 右侧文字和按钮 -->
+            <div class="book-info">
+                <div class="text-group">
+                    <div class="book-title">我不是戏神</div>
+                    <div class="book-author">作者：三九音域</div>
+					<div class="book-author">分类</div>
+                    <div class="book-price">¥ 29.90</div>
+                </div>
+                
+                <!-- 按钮 -->
+                <button class="add-cart-btn" onclick="viewBookDetail(6, '我不是戏神', 29.90, '三九音域')">查看详情</button>
+            </div>
+        </div>
+
+        <!-- 书籍 7 -->
+        <div class="book-card">
+            <!-- 左侧图片 -->
+            <div class="book-cover">
+                <img src="img/我不是戏神.jfif" alt="我不是戏神">
+            </div>
+            <!-- 右侧文字和按钮 -->
+            <div class="book-info">
+                <div class="text-group">
+                    <div class="book-title">我不是戏神</div>
+                    <div class="book-author">作者：三九音域</div>
+					<div class="book-author">分类</div>
+                    <div class="book-price">¥ 29.90</div>
+                </div>
+                
+                <!-- 按钮 -->
+                <button class="add-cart-btn" onclick="viewBookDetail(7, '我不是戏神', 29.90, '三九音域')">查看详情</button>
+            </div>
+        </div>
+
+        <!-- 书籍 8 -->
+        <div class="book-card">
+            <!-- 左侧图片 -->
+            <div class="book-cover">
+                <img src="img/我不是戏神.jfif" alt="我不是戏神">
+            </div>
+            <!-- 右侧文字和按钮 -->
+            <div class="book-info">
+                <div class="text-group">
+                    <div class="book-title">我不是戏神</div>
+                    <div class="book-author">作者：三九音域</div>
+					<div class="book-author">分类</div>
+                    <div class="book-price">¥ 29.90</div>
+                </div>
+                
+                <!-- 按钮 -->
+                <button class="add-cart-btn" onclick="viewBookDetail(8, '我不是戏神', 29.90, '三九音域')">查看详情</button>
+            </div>
+        </div>
+
+        <!-- 书籍 9 -->
+        <div class="book-card">
+            <!-- 左侧图片 -->
+            <div class="book-cover">
+                <img src="img/我不是戏神.jfif" alt="我不是戏神">
+            </div>
+            <!-- 右侧文字和按钮 -->
+            <div class="book-info">
+                <div class="text-group">
+                    <div class="book-title">我不是戏神</div>
+                    <div class="book-author">作者：三九音域</div>
+					<div class="book-author">分类</div>
+                    <div class="book-price">¥ 29.90</div>
+                </div>
+                
+                <!-- 按钮-->
+                <button class="add-cart-btn" onclick="viewBookDetail(9, '我不是戏神', 29.90, '三九音域')">查看详情</button>
+            </div>
+        </div>
+
+        <!-- 书籍 10 -->
+        <div class="book-card">
+            <!-- 左侧图片 -->
+            <div class="book-cover">
+                <img src="img/我不是戏神.jfif" alt="我不是戏神">
+            </div>
+            <!-- 右侧文字和按钮 -->
+            <div class="book-info">
+                <div class="text-group">
+                    <div class="book-title">我不是戏神</div>
+                    <div class="book-author">作者：三九音域</div>
+					<div class="book-author">分类</div>
+                    <div class="book-price">¥ 29.90</div>
+                </div>
+                
+                <!-- 按钮 -->
+                <button class="add-cart-btn" onclick="viewBookDetail(10, '我不是戏神', 29.90, '三九音域')">查看详情</button>
+            </div>
+        </div>
+
+        <!-- 书籍 11 -->
+        <div class="book-card">
+            <!-- 左侧图片 -->
+            <div class="book-cover">
+                <img src="img/我不是戏神.jfif" alt="我不是戏神">
+            </div>
+            <!-- 右侧文字和按钮 -->
+            <div class="book-info">
+                <div class="text-group">
+                    <div class="book-title">我不是戏神</div>
+                    <div class="book-author">作者：三九音域</div>
+					<div class="book-author">分类</div>
+                    <div class="book-price">¥ 29.90</div>
+                </div>
+                
+                <!-- 按钮 -->
+                <button class="add-cart-btn" onclick="viewBookDetail(11, '我不是戏神', 29.90, '三九音域')">查看详情</button>
+            </div>
+        </div>
+
+        <!-- 书籍 12 -->
+        <div class="book-card">
+            <!-- 左侧图片 -->
+            <div class="book-cover">
+                <img src="img/我不是戏神.jfif" alt="我不是戏神">
+            </div>
+            <!-- 右侧文字和按钮 -->
+            <div class="book-info">
+                <div class="text-group">
+                    <div class="book-title">反骨</div>
+                    <div class="book-author">作者：三九音域</div>
+					<div class="book-author">分类</div>
+                    <div class="book-price">¥ 30.90</div>
+                </div>
+                <!-- 按钮 -->
+                <button class="add-cart-btn" onclick="viewBookDetail(12, '反骨', 30.90, '三九音域')">查看详情</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 最新资讯模块 -->
+<div class="news-section">
+    <div class="news-header">
+        <h2>最新资讯</h2>
+        <span class="decoration">☀</span> <!-- 用字符模拟那个小图标 -->
+    </div>
+
+    <div class="news-grid">
+        <!-- 第一行 -->
+        <a href="#" class="news-item">
+            <span class="news-title">番茄短故事 | 「IP金品共创计划」激...</span>
+            <span class="arrow">></span>
+        </a>
+
+        <a href="#" class="news-item">
+            <span class="news-title">2026年3月番茄平台账号违规处罚公告</span>
+            <span class="arrow">></span>
+        </a>
+        <a href="#" class="news-item">
+            <span class="news-title">2026年3月平台福利活动拟获奖作品公示</span>
+            <span class="arrow">></span>
+        </a>
+
+        <!-- 第二行 -->
+        <a href="#" class="news-item">
+            <span class="news-title">2026年3月平台福利活动拟获奖作品公示</span>
+            <span class="arrow">></span>
+        </a>
+
+        <a href="#" class="news-item">
+            <span class="news-title">百万 IP 护航计划升级：面向潜力新人...</span>
+            <span class="arrow">></span>
+        </a>
+        <a href="#" class="news-item">
+            <span class="news-title">2026年3月平台福利活动拟获奖作品公示</span>
+            <span class="arrow">></span>
+        </a>
+
+        <!-- 第三行 -->
+        <a href="#" class="news-item">
+            <span class="news-title">番茄小说关于治理作品阅读数据刷量...</span>
+            <span class="arrow">></span>
+        </a>
+
+        <a href="#" class="news-item">
+            <span class="news-title">番茄短故事 | 「IP金品共创计划」激...</span>
+            <span class="arrow">></span>
+        </a>
+        <a href="#" class="news-item">
+            <span class="news-title">2026年3月平台福利活动拟获奖作品公示</span>
+            <span class="arrow">></span>
+        </a>
+
+        <!-- 第四行 -->
+        <a href="#" class="news-item">
+            <span class="news-title">番茄短故事2026「千字万金」五百万...</span>
+            <span class="arrow">></span>
+        </a>
+
+        <a href="#" class="news-item">
+            <span class="news-title">重磅官宣 | 恭喜东周公子南晋升金番...</span>
+            <span class="arrow">></span>
+        </a>
+        <a href="#" class="news-item">
+            <span class="news-title">2026年3月平台福利活动拟获奖作品公示</span>
+            <span class="arrow">></span>
+        </a>
+    </div>
+    
+    <!-- 底部更多链接 -->
+    <div class="more-link">
+        <a href="#">更多 <span class="arrow-small">></span></a>
+    </div>
+</div>
+<!-- 购物车和登录检查相关函数 -->
+<script>
+    function getCartKey() {
+        const username = localStorage.getItem('currentUser') || 'guest';
+        return 'bookstore_cart_' + username;
+    }
+    
+    function getCart() {
+        const data = localStorage.getItem(getCartKey());
+        return data ? JSON.parse(data) : [];
+    }
+    
+    function saveCart(cart) {
+        localStorage.setItem(getCartKey(), JSON.stringify(cart));
+    }
+    
+    function addToCartFromIndex(bookId, bookName, bookPrice, bookAuthor) {
+        if (!isLoggedIn()) {
+            alert('请先登录后再查看书籍详情！');
+			window.location.href = 'login.html';
+            redirectToLogin();
+            return;
+        }
+        
+        let cart = getCart();
+        const existingItem = cart.find(item => item.id === bookId);
+        
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cart.push({
+                id: bookId,
+                name: bookName,
+                author: bookAuthor,
+                price: parseFloat(bookPrice),
+                cover: 'img/我不是戏神.jfif',
+                quantity: 1
+            });
+        }
+        
+        saveCart(cart);
+        showToast('已加入购物车！');
+    }
+    
+    function viewBookDetail(bookId, bookName, bookPrice, bookAuthor) {
+        // 查看详情需要先登录
+        const currentUser = localStorage.getItem('currentUser');
+        if (!currentUser || currentUser === '' || currentUser === null) {
+            alert('请先登录后再查看书籍详情！');
+            // 保存当前页面URL，登录后返回
+            sessionStorage.setItem('redirectAfterLogin', '书库.html');
+            window.location.href = 'login.html';
+            return;
+        }
+        // 登录后才能跳转到详情页
+        window.location.href = '书库.html';
+    }
+</script>
+
+<!-- 请将以下代码放入你的 index.html 文件底部 -->
+<!-- 在 index.html 和 书库.html 的底部加上这段代码 -->
+<script>
+    // 页面加载时，立刻检查身份
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. 找到导航栏里的“管理后台”链接
+        const adminLink = document.getElementById('adminLink'); 
+        
+        // 2. 读取当前登录用户的身份标签
+        const userRole = localStorage.getItem('userRole');
+        
+        // 3. 如果身份不是管理员（admin），就强制隐藏这个链接
+        if (adminLink && userRole !== 'admin') {
+            adminLink.style.display = 'none';
+        }
+    });
+</script>
+
+</body>
+</html>

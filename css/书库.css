@@ -1,0 +1,96 @@
+body {
+	background-color: #f0f2f5;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* --- 2. 主体布局 (侧边栏 + 内容) --- */
+.main-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+/* --- 左侧侧边栏 --- */
+.sidebar {
+    width: 220px;
+    background-color: #2c3e50; /* 与顶部一致 */
+    color: #aebac6;
+    overflow-y: auto;
+	text-align: center;
+	font-size: 20px; 
+}
+
+.sidebar-header {
+	padding: 15px 20px;
+	font-size: 20px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #fff;
+}
+
+.category-list {
+    list-style: none;
+}
+
+.category-list li {
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+}
+
+.category-list li:hover {
+    background-color: rgba(255,255,255,0.05);
+    color: #fff;
+	margin: center;
+}
+
+/* --- 右侧内容区 --- */
+.content-area {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #f0f2f5;
+}
+
+.content-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    min-height: 100%;
+}
+
+.section-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    color: #333;
+    display: flex;
+    align-items: center;
+}
+.section-title i { 
+	margin-right: 10px; color: #4fc3f7; 
+}
+.books-grid {
+    display: flex;
+    flex-wrap: wrap; /* 关键：允许换行 */
+    gap: 15px;
+    justify-content: flex-start; /* 从左开始对齐 */
+}
+.add-cart-btn1 {
+    background-color: #007bff; /* 蓝色按钮 */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 16px;
+    width: 140px;               /* 按钮宽度占满右侧区域 */
+	margin-left: 40px; 
+	margin-bottom: 50px;
+    text-align: center;
+    text-decoration: none;     /* 去除链接下划线 */
+    display: block;            /* 保证按钮行为像块级元素 */
+}
