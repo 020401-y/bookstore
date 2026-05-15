@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>管理后台</title>
+		<link rel="stylesheet" href="css/style.css">
+		<link rel="stylesheet" href="css/后台.css">
+	</head>
+	<body>
+		<div class="navbar">
+		    <div class="nav-left">
+		        <div class="logo">📚 云端书库</div>
+		        <div class="nav-menu">
+		            <ul>
+		                <li><a href="index.html">首页</a></li>
+		                <li><a href="书库.html">书库</a></li>
+		                <li><a href="shop.html">购物车</a></li>
+						<li><a href="后台.html">管理后台</a></li>
+		            </ul>
+		        </div>
+		        <div class="search-group">
+		            <input type="text" id="searchInput" class="search-box" placeholder="输入书名搜索..." onkeydown="if(event.keyCode==13) doSearch()">
+		            <button onclick="doSearch()" class="search-btn">搜索</button>
+		        </div>
+		    </div>
+		    <div class="nav-right">
+		        <a href="user.html">个人中心</a>
+		    </div>
+		</div>
+
+		<div class="main-layout">
+			<div class="sidebar">
+			    <ul class="menu">
+			        <li onclick="switchTab('books')" id="menu-books" class="active">图书管理</li>
+			        <li onclick="switchTab('orders')" id="menu-orders">订单管理</li>
+			        <li onclick="switchTab('users')" id="menu-users">用户管理</li>
+			    </ul>
+			</div>
+			
+			<div class="main-content">
+			    <div id="view-books">
+			        <div class="page-title">图书管理</div>
+			        <div class="card">
+			            <button class="btn btn-primary" onclick="openAddModal()">+ 添加图书</button>
+			            <table>
+			                <thead>
+			                    <tr>
+			                        <th>封面</th>
+			                        <th>书名</th>
+			                        <th>分类</th> 
+			                        <th>作者</th>
+			                        <th>价格</th>
+			                        <th>库存</th>
+			                        <th style="text-align:right;">操作</th>
+			                    </tr>
+			                </thead>
+			                <tbody id="book-table-body">
+			                </tbody>
+			            </table>
+			        </div>
+			    </div>
+
+			    <div id="view-orders" class="hidden">
+			        <div class="page-title">订单管理</div>
+			        <div class="card" id="orders-card">
+			        </div>
+			    </div>
+
+			    <div id="view-users" class="hidden">
+			        <div class="page-title">用户管理</div>
+			        <div class="card" id="users-card">
+			        </div>
+			    </div>
+			</div>
+			
+			<div class="modal-overlay" id="bookModal">
+			    <div class="modal">
+			        <div class="modal-header" id="modalTitle">添加图书</div>
+			        <form id="bookForm" onsubmit="handleSave(event)">
+			            <input type="hidden" id="editIndex">
+			            <div class="form-item">
+			                <label>图书封面</label>
+			                <div class="upload-tabs">
+			                    <div class="tab-item active" onclick="switchUploadMode('local')" id="tab-local">本地上传</div>
+			                    <div class="tab-item" onclick="switchUploadMode('link')" id="tab-link">网络链接</div>
+			                </div>
+			                <input type="file" id="coverFile" class="form-control" accept="image/*" onchange="handleFileUpload(this)">
+			                <input type="text" id="coverLink" class="form-control hidden" placeholder="请输入图片URL地址...">
+			                <div class="preview-container">
+			                    <img id="coverPreview" class="preview-img" src="" alt="预览">
+			                </div>
+			            </div>
+			            <div class="form-item">
+			                <label>书名</label>
+			                <input type="text" id="bookName" class="form-control" placeholder="请输入书名" required>
+			            </div>
+			            <div class="form-item">
+			                <label>分类</label>
+			                <select id="bookCategory" class="form-control" required>
+			                    <option value="" disabled selected>请选择分类</option>
+			                    <option value="文学小说">文学小说</option>
+			                    <option value="科学技术">科学技术</option>
+			                    <option value="人文社科">人文社科</option>
+			                    <option value="少儿读物">少儿读物</option>
+			                    <option value="艺术设计">艺术设计</option>
+			                    <option value="生活休闲">生活休闲</option>
+			                </select>
+			            </div>
+			            <div class="form-item">
+			                <label>作者</label>
+			                <input type="text" id="bookAuthor" class="form-control" placeholder="请输入作者" required>
+			            </div>
+			            <div class="form-row">
+			                <div class="form-item">
+			                    <label>价格</label>
+			                    <input type="number" id="bookPrice" class="form-control" placeholder="0.00" step="0.01" required>
+			                </div>
+			                <div class="form-item">
+			                    <label>库存</label>
+			                    <input type="number" id="bookStock" class="form-control" placeholder="0" required>
+			                </div>
+			            </div>
+			            <div class="modal-footer">
+			                <button type="button" class="btn btn-cancel" onclick="closeModal()">取消</button>
+			                <button type="submit" class="btn btn-save">保存</button>
+			            </div>
+			        </form>
+			    </div>
+			</div>
+		</div>	
+
+		<script>
+		    const STORAGE_KEY = 'bookstore_data_v1';
+		    let books = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+		    document.addEventListener('DOMContentLoaded', () => {
+		        renderTable();
+		    });
+
+		    function saveToStorage() {
+		        localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
+		        renderTable();
+		    }
+
+		    function renderTable() {
+		        const tbody = document.getElementById('book-table-body');
+		        tbody.innerHTML = '';
+		        
+		        if (books.length === 0) {
+		            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:32px; color:#999;">暂无图书数据，请点击"添加图书"</td></tr>';
+		            return;
+		        }
+		        
+		        books.forEach((book, index) => {
+		            const tr = document.createElement('tr');
+		            const coverSrc = book.cover || 'https://via.placeholder.com/40x50?text=No+Cover';
+		            tr.innerHTML = `
+		                <td><img src="${coverSrc}" class="book-cover-img" alt="封面"></td>
+		                <td>${book.name}</td>
+		                <td>${book.category || '未分类'}</td> 
+		                <td>${book.author}</td>
+		                <td>¥${parseFloat(book.price).toFixed(2)}</td>
+		                <td>${book.stock}</td>
+		                <td style="text-align:right;">
+		                    <button class="btn btn-edit btn-action" onclick="openEditModal(${index})">编辑</button>
+		                    <button class="btn btn-delete btn-action" onclick="deleteBook(${index})">删除</button>
+		                </td>
+		            `;
+		            tbody.appendChild(tr);
+		        });
+		    }
+
+		    const modal = document.getElementById('bookModal');
+		    
+		    function openAddModal() {
+		        document.getElementById('modalTitle').innerText = '添加图书';
+		        document.getElementById('bookForm').reset();
+		        document.getElementById('editIndex').value = '';
+		        document.getElementById('coverPreview').style.display = 'none';
+		        document.getElementById('coverPreview').src = '';
+		        switchUploadMode('local');
+		        modal.style.display = 'flex';
+		    }
+
+		    function openEditModal(index) {
+		        const book = books[index];
+		        document.getElementById('modalTitle').innerText = '编辑图书';
+		        document.getElementById('editIndex').value = index;
+		        document.getElementById('bookName').value = book.name;
+		        document.getElementById('bookAuthor').value = book.author;
+		        document.getElementById('bookPrice').value = book.price;
+		        document.getElementById('bookStock').value = book.stock;
+		        document.getElementById('bookCategory').value = book.category || '';
+		        
+		        if (book.cover && book.cover.startsWith('http') && !book.cover.includes('base64')) {
+		            switchUploadMode('link');
+		            document.getElementById('coverLink').value = book.cover;
+		            document.getElementById('coverPreview').src = book.cover;
+		        } else {
+		            switchUploadMode('local');
+		            if (book.cover) {
+		                document.getElementById('coverPreview').src = book.cover;
+		                document.getElementById('coverPreview').style.display = 'block';
+		            } else {
+		                document.getElementById('coverPreview').style.display = 'none';
+		            }
+		        }
+		        modal.style.display = 'flex';
+		    }
+
+		    function closeModal() {
+		        modal.style.display = 'none';
+		    }
+
+		    let currentUploadMode = 'local';
+		    function switchUploadMode(mode) {
+		        currentUploadMode = mode;
+		        const fileInput = document.getElementById('coverFile');
+		        const linkInput = document.getElementById('coverLink');
+		        const tabLocal = document.getElementById('tab-local');
+		        const tabLink = document.getElementById('tab-link');
+		        if (mode === 'local') {
+		            fileInput.classList.remove('hidden');
+		            linkInput.classList.add('hidden');
+		            tabLocal.classList.add('active');
+		            tabLink.classList.remove('active');
+		        } else {
+		            fileInput.classList.add('hidden');
+		            linkInput.classList.remove('hidden');
+		            tabLocal.classList.remove('active');
+		            tabLink.classList.add('active');
+		            document.getElementById('coverPreview').style.display = 'none';
+		            document.getElementById('coverPreview').src = '';
+		        }
+		    }
+
+		    function handleFileUpload(input) {
+		        if (input.files && input.files[0]) {
+		            const reader = new FileReader();
+		            reader.onload = function(e) {
+		                const preview = document.getElementById('coverPreview');
+		                preview.src = e.target.result;
+		                preview.style.display = 'block';
+		            }
+		            reader.readAsDataURL(input.files[0]);
+		        }
+		    }
+
+		    function handleSave(e) {
+		        e.preventDefault();
+		        const index = document.getElementById('editIndex').value;
+		        const name = document.getElementById('bookName').value;
+		        const author = document.getElementById('bookAuthor').value;
+		        const category = document.getElementById('bookCategory').value; 
+		        const price = document.getElementById('bookPrice').value;
+		        const stock = document.getElementById('bookStock').value;
+		        let cover = '';
+
+		        if (currentUploadMode === 'link') {
+		            cover = document.getElementById('coverLink').value;
+		            if (!cover) cover = index !== '' ? books[index].cover : '';
+		        } else {
+		            const previewSrc = document.getElementById('coverPreview').src;
+		            if (previewSrc && previewSrc.includes('base64')) {
+		                cover = previewSrc;
+		            } else if (index !== '') {
+		                cover = books[index].cover;
+		            }
+		        }
+
+		        const bookData = {
+		            id: index !== '' ? books[index].id : Date.now(),
+		            name: name,
+		            author: author,
+		            category: category, 
+		            price: price,
+		            stock: stock,
+		            cover: cover
+		        };
+
+		        if (index === '') {
+		            books.unshift(bookData);
+		        } else {
+		            books[index] = bookData;
+		        }
+		        saveToStorage();
+		        closeModal();
+		    }
+
+		    function deleteBook(index) {
+		        if (confirm('确定要删除这本书吗？')) {
+		            books.splice(index, 1);
+		            saveToStorage();
+		        }
+		    }
+
+		    function switchTab(tabName) {
+		        document.getElementById('view-books').classList.add('hidden');
+		        document.getElementById('view-orders').classList.add('hidden');
+		        document.getElementById('view-users').classList.add('hidden');
+		        document.getElementById('menu-books').classList.remove('active');
+		        document.getElementById('menu-orders').classList.remove('active');
+		        document.getElementById('menu-users').classList.remove('active');
+		        document.getElementById('view-' + tabName).classList.remove('hidden');
+		        document.getElementById('menu-' + tabName).classList.add('active');
+		        
+		        if (tabName === 'orders') {
+		            renderOrders();
+		        }
+		        if (tabName === 'users') {
+		            renderUsers();
+		        }
+		    }
+
+		    function renderOrders() {
+		        const ordersCard = document.getElementById('orders-card');
+		        
+		        const USER_DB_KEY = 'bookstore_users';
+		        const userDb = JSON.parse(localStorage.getItem(USER_DB_KEY)) || {};
+		        const usernames = Object.keys(userDb);
+		        
+		        let allOrders = [];
+		        
+		        usernames.forEach(username => {
+		            const ORDER_KEY = 'bookstore_orders_' + username;
+		            const userOrders = JSON.parse(localStorage.getItem(ORDER_KEY)) || [];
+		            
+		            userOrders.forEach(order => {
+		                allOrders.push({
+		                    ...order,
+		                    username: username
+		                });
+		            });
+		        });
+		        
+		        allOrders.sort((a, b) => b.id - a.id);
+		        
+		        if (allOrders.length === 0) {
+		            ordersCard.innerHTML = '<div style="text-align:center; padding:40px; color:#999;">暂无订单数据</div>';
+		            return;
+		        }
+		        
+		        let totalRevenue = 0;
+		        allOrders.forEach(order => totalRevenue += order.total);
+		        
+		        let ordersHtml = `
+		            <div style="margin-bottom:20px; padding:15px; background:#e8f5e9; border-radius:8px;">
+		                <h3 style="margin:0; color:#2e7d32;">📊 统计信息</h3>
+		                <p style="margin:10px 0 0 0; font-size:18px;">总订单数：<strong>${allOrders.length}</strong> | 总销售额：<strong style="color:#d32f2f;">¥${totalRevenue.toFixed(2)}</strong></p>
+		            </div>
+		            <table>
+		                <thead>
+		                    <tr>
+		                        <th>用户名</th>
+		                        <th>书籍</th>
+		                        <th>订单时间</th>
+		                        <th>总价</th>
+		                        <th style="text-align:right;">状态</th>
+		                    </tr>
+		                </thead>
+		                <tbody>
+		        `;
+		        
+		        allOrders.forEach(order => {
+		            const firstItem = order.items[0];
+		            const moreCount = order.items.length;
+		            
+		            ordersHtml += `
+		                <tr>
+		                    <td><strong>${order.username}</strong></td>
+		                    <td>
+		                        <div style="display:flex; align-items:center; gap:10px;">
+		                            <img src="${firstItem.cover || 'https://via.placeholder.com/40x50'}" style="width:40px; height:50px; object-fit:cover; border-radius:4px;">
+		                            <div>
+		                                <div style="font-weight:bold;">${firstItem.name}</div>
+		                                <div style="color:#666; font-size:12px;">作者：${firstItem.author}</div>
+		                                ${moreCount > 1 ? `<div style="color:#999; font-size:12px;">等 ${moreCount} 本书</div>` : ''}
+		                            </div>
+		                        </div>
+		                    </td>
+		                    <td>${order.date}</td>
+		                    <td style="color:#d32f2f; font-weight:bold;">¥${order.total.toFixed(2)}</td>
+		                    <td style="text-align:right;">
+		                        <span style="display:inline-block; padding:5px 12px; background:#4CAF50; color:white; border-radius:4px; font-size:12px;">已支付</span>
+		                    </td>
+		                </tr>
+		            `;
+		        });
+		        
+		        ordersHtml += `
+		                </tbody>
+		            </table>
+		        `;
+		        
+		        ordersCard.innerHTML = ordersHtml;
+		    }
+		    
+		    function renderUsers() {
+		        const usersCard = document.getElementById('users-card');
+		        
+		        const USER_DB_KEY = 'bookstore_users';
+		        const userDb = JSON.parse(localStorage.getItem(USER_DB_KEY)) || {};
+		        const usernames = Object.keys(userDb);
+		        
+		        if (usernames.length === 0) {
+		            usersCard.innerHTML = '<div style="text-align:center; padding:40px; color:#999;">暂无用户数据</div>';
+		            return;
+		        }
+		        
+		        let usersHtml = `
+		            <table>
+		                <thead>
+		                    <tr>
+		                        <th>用户名</th>
+		                        <th>订单数</th>
+		                        <th>消费总额</th>
+		                        <th style="text-align:right;">操作</th>
+		                    </tr>
+		                </thead>
+		                <tbody>
+		        `;
+		        
+		        usernames.forEach(username => {
+		            const ORDER_KEY = 'bookstore_orders_' + username;
+		            const userOrders = JSON.parse(localStorage.getItem(ORDER_KEY)) || [];
+		            
+		            let totalSpent = 0;
+		            userOrders.forEach(order => totalSpent += order.total);
+		            
+		            usersHtml += `
+		                <tr>
+		                    <td><strong>${username}</strong>${username === 'admin' ? ' <span style="color:#4CAF50; font-size:12px;">(管理员)</span>' : ''}</td>
+		                    <td>${userOrders.length}</td>
+		                    <td>¥${totalSpent.toFixed(2)}</td>
+		                    <td style="text-align:right;">
+		                        ${username !== 'admin' ? `<button class="btn btn-delete btn-action" onclick="deleteUser('${username}')">删除用户</button>` : '<span style="color:#999;">不可操作</span>'}
+		                    </td>
+		                </tr>
+		            `;
+		        });
+		        
+		        usersHtml += `
+		                </tbody>
+		            </table>
+		        `;
+		        
+		        usersCard.innerHTML = usersHtml;
+		    }
+		    
+		    function deleteUser(username) {
+		        if (!confirm(`确定要删除用户 "${username}" 吗？该用户的订单记录也会被删除！`)) {
+		            return;
+		        }
+		        
+		        const USER_DB_KEY = 'bookstore_users';
+		        let userDb = JSON.parse(localStorage.getItem(USER_DB_KEY)) || {};
+		        
+		        delete userDb[username];
+		        localStorage.setItem(USER_DB_KEY, JSON.stringify(userDb));
+		        
+		        const ORDER_KEY = 'bookstore_orders_' + username;
+		        localStorage.removeItem(ORDER_KEY);
+		        
+		        renderUsers();
+		        alert('用户已删除！');
+		    }
+
+		    window.onclick = function(event) {
+		        if (event.target == modal) {
+		            closeModal();
+		        }
+		    }
+		</script>
+	</body>
+</html>
