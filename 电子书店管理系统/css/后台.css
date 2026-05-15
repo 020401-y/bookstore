@@ -1,0 +1,193 @@
+body {
+    display: flex;
+    flex-direction: column; /* 改为垂直排列：先导航栏，后主布局 */
+    height: 100vh;
+    margin: 0;
+    font-family: "Microsoft YaHei", sans-serif;
+    background-color: #f0f2f5;
+}
+
+/* 2. 新增：主布局容器样式 */
+.main-layout {
+    display: flex; /* 保持侧边栏和内容区的横向排列 */
+    flex: 1; /* 关键：让这个容器占据除了导航栏以外的所有剩余高度 */
+    overflow: hidden; /* 防止出现双重滚动条 */
+}
+/* --- 侧边栏 (已修改为 index.html 样式) --- */
+        .sidebar {
+            width: 240px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            display: flex;
+            flex-direction: column;
+        }
+        .menu { list-style: none; padding: 20px 0; }
+        .menu li {
+            padding: 15px 24px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 15px;
+        }
+        .menu li:hover { background-color: #34495e; }
+        .menu li.active {
+            background-color: #3498db;
+            border-right: 4px solid #ecf0f1;
+        }
+
+        /* --- 主内容区 --- */
+        .main-content { flex: 1; padding: 24px; overflow-y: auto; }
+        .page-title {
+            font-size: 24px;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 4px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* --- 表格样式 (修改点：固定布局实现均匀分布) --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            /* 关键样式：让列宽均匀分布 */
+            table-layout: fixed;
+        }
+        /* 修正：7列均分，每列宽度约为 14.28% */
+        th, td {
+            text-align: left;
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            width: 14.28%; /* 100% / 7 columns */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        th {
+            background-color: #fafafa;
+            font-weight: 600;
+            color: #595959;
+        }
+        tr:hover { background-color: #fafafa; }
+        .book-cover-img {
+            width: 40px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        /* --- 按钮 --- */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background-color: #1890ff;
+            color: white;
+            margin-bottom: 16px;
+        }
+        .btn-primary:hover { background-color: #40a9ff; }
+        .btn-edit { color: #1890ff; background: none; padding: 0 8px; }
+        .btn-delete { color: #ff4d4f; background: none; padding: 0 8px; }
+        .btn-action { margin-right: 8px; }
+
+        /* --- 模态框 --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.45);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal {
+            background-color: #fff;
+            width: 520px;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .modal-header {
+            font-size: 18px;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+        .form-item {
+            margin-bottom: 20px;
+        }
+        .form-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #595959;
+        }
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius:  4px;
+            height: 40px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #40a9ff;
+            outline: 0;
+            box-shadow: 0 0 0 2px rgba(24,144,255,0.2);
+        }
+        .form-row { display: flex; gap: 16px; }
+        .form-row .form-item { flex: 1; }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 32px;
+        }
+        .btn-cancel { background-color: #f5f5f5; color: #333; }
+        .btn-save { background-color: #1890ff; color: white; }
+
+        /* --- 封面上传切换样式 --- */
+        .upload-tabs {
+            display: flex;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .tab-item {
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 16px;
+            color: #595959;
+        }
+        .tab-item.active {
+            color: #1890ff;
+            border-bottom: 2px solid #1890ff;
+            font-weight: 500;
+        }
+        .preview-container {
+            margin-top: 12px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+        }
+        .preview-img {
+            max-height: 100px;
+            max-width: 80px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        /* --- 隐藏元素 --- */
+        .hidden { display: none !important; }

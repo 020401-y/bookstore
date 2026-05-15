@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 云端书库</title>
+    <link rel="stylesheet" href="css/style.css">
+	<script src="nav.js"></script>
+    <style>
+        /* 个人中心样式 */
+        .user-container {
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .user-title {
+            font-size: 24px;
+            color: #333;
+        }
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        .card {
+            background: #f9f9f9;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        .admin-card {
+            background: #e8f5e9;
+            border-left-color: #4CAF50;
+        }
+        .content-placeholder {
+            color: #666;
+            text-align: center;
+            padding: 40px 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<div class="navbar">
+    <div class="nav-left">
+        <div class="logo">📚 云端书库</div>
+        <div class="nav-menu">
+            <ul>
+                <li><a href="index.html">首页</a></li>
+                <li><a href="书库.html">书库</a></li>
+                <li><a href="shop.html">购物车</a></li>
+                <li class="admin-only" id="adminNavItem"><a href="后台.html">管理后台</a></li> 
+            </ul>
+        </div>
+        <div class="search-group">
+            <input
+                type="text" 
+                id="searchInput" 
+                class="search-box" 
+                placeholder="输入书名搜索..." 
+                onkeydown="if(event.keyCode==13) doSearch()"
+            >
+            <button onclick="doSearch()" class="search-btn">搜索</button>
+        </div>
+    </div>
+    <div class="nav-right">
+        <a href="user.html" class="active">个人中心</a>
+    </div>
+</div>
+
+<!-- 页面内容 -->
+<div class="user-container">
+    <div class="user-header">
+        <h2 class="user-title">个人中心</h2>
+        <button class="logout-btn" onclick="logout()">退出登录</button>
+    </div>
+    <div id="userContent">
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentUser = localStorage.getItem('currentUser');
+        if (!currentUser) {
+            alert("请先登录！");
+            window.location.href = 'login.html';
+            return;
+        }
+
+        initNavigation();
+        renderUserPage();
+    });
+
+    function initNavigation() {
+        const adminLink = document.getElementById('adminNavItem');
+        const userRole = localStorage.getItem('userRole');
+        
+        if (adminLink && userRole === 'admin') {
+            adminLink.style.display = "";
+        }
+    }
+
+    function renderUserPage() {
+        const currentUser = localStorage.getItem('currentUser');
+        const userRole = localStorage.getItem('userRole');
+        const container = document.getElementById('userContent');
+
+        const ORDER_KEY = 'bookstore_orders_' + currentUser;
+        let orders = JSON.parse(localStorage.getItem(ORDER_KEY)) || [];
+        
+        let ordersHtml = '';
+        if (orders.length > 0) {
+            ordersHtml = orders.map(order => `
+                <div style="margin-top:20px; padding:15px; border:1px solid #eee; border-radius:8px; background:white;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold; border-bottom:1px dashed #ddd; padding-bottom:10px;">
+                        <span>📅 订单时间：${order.date}</span>
+                        <span style="color:#d32f2f;">💰 总价：¥${order.total.toFixed(2)}</span>
+                    </div>
+                    <div style="display:flex; flex-wrap:wrap; gap:15px; margin-top:15px;">
+                        ${order.items.map(item => `
+                            <div style="display:flex; align-items:center; gap:10px; padding:10px; background:#f9f9f9; border-radius:6px;">
+                                <img src="${item.cover || 'https://via.placeholder.com/60x80'}" style="width:60px; height:80px; object-fit:cover; border-radius:4px;">
+                                <div>
+                                    <div style="font-weight:bold;">${item.name}</div>
+                                    <div style="color:#666; font-size:12px;">作者：${item.author}</div>
+                                    <div style="color:#d32f2f;">¥${item.price.toFixed(2)} × ${item.quantity}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            ordersHtml = '<div style="text-align:center; padding:40px; color:#999;">还没有购买记录，去书库挑选喜欢的书吧！</div>';
+        }
+
+        if (userRole === 'admin') {
+            container.innerHTML = `
+                <div class="card admin-card">
+                    <h3>👑 管理员专属面板</h3>
+                    <p>当前身份：${currentUser} (管理员)</p>
+                    <p>您拥有最高权限，可以管理所有书籍和用户。</p>
+                    <a href="后台.html">
+                        <button style="padding:10px; background:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer;">
+                            立即进入管理后台
+                        </button>
+                    </a>
+                </div>
+                <div class="card" style="margin-top:20px;">
+                    <h3>📚 我的购买记录</h3>
+                    ${ordersHtml}
+                </div>
+            `;
+        } 
+        else {
+            container.innerHTML = `
+                <div class="card">
+                    <h3>👤 欢迎你，${currentUser}</h3>
+                    <p>这是您的个人空间。</p>
+                    <p>您当前的权限为：普通用户。</p>
+                    <p>您无法访问管理后台，只能浏览书库和管理购物车。</p>
+                </div>
+                <div class="card" style="margin-top:20px;">
+                    <h3>📚 我的购买记录</h3>
+                    ${ordersHtml}
+                </div>
+            `;
+        }
+    }
+
+    function logout() {
+        if (confirm("确定要退出登录吗？")) {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('userRole');
+            window.location.href = 'login.html';
+        }
+    }
+</script>
+
+</body>
+</html>
